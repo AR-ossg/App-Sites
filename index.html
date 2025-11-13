@@ -6,16 +6,98 @@
     <title>Gestión de Sitios</title>
     <link rel="manifest" href="manifest.json">
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: sans-serif; }
         iframe { width: 100%; height: 100%; border: none; }
+        
+        /* Estilo del botón de instalación */
+        #installBtn {
+            display: none; /* Oculto por defecto */
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        /* Mensaje para iPhone */
+        #iosInstructions {
+            display: none;
+            position: fixed;
+            bottom: 10px;
+            width: 90%;
+            left: 5%;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            text-align: center;
+            z-index: 1000;
+            font-size: 14px;
+        }
+        .close-ios {
+            position: absolute; top: 5px; right: 10px; font-weight: bold; color: #888;
+        }
     </style>
 </head>
 <body>
     <iframe src="https://script.google.com/macros/s/AKfycbx-2HP0phFHlTplMYNzVu2tRblwUpicOr6gptu1vx-s5Qnj8SXMuasb61Hc9GsGJyhQjw/exec"></iframe>
 
+    <button id="installBtn">📲 Instalar App</button>
+
+    <div id="iosInstructions">
+        <span class="close-ios" onclick="this.parentElement.style.display='none'">x</span>
+        <p>Para instalar en iPhone:<br>Toca el botón <b>Compartir</b> <span style="font-size:20px">⏏️</span> y selecciona <b>"Agregar al inicio"</b>.</p>
+    </div>
+
     <script>
+        // Registro del Service Worker
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('service-worker.js');
+        }
+
+        // Lógica de Instalación (Android/PC)
+        let deferredPrompt;
+        const installBtn = document.getElementById('installBtn');
+        const iosMsg = document.getElementById('iosInstructions');
+
+        // Detectar si es iPhone/iPad
+        const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+        // 1. Evento para Android/Chrome
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'block'; // Mostrar botón
+        });
+
+        // 2. Evento Clic en el botón
+        installBtn.addEventListener('click', (e) => {
+            installBtn.style.display = 'none';
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('Usuario aceptó instalar');
+                }
+                deferredPrompt = null;
+            });
+        });
+
+        // 3. Lógica para iPhone (Mostrar instrucciones si no está instalada)
+        // Si es iOS y no está en modo pantalla completa (standalone)
+        if (isIos && !window.navigator.standalone) {
+             // Mostramos el mensaje después de 2 segundos
+             setTimeout(() => {
+                 iosMsg.style.display = 'block';
+             }, 2000);
         }
     </script>
 </body>
