@@ -7,12 +7,12 @@
   "theme_color": "#2563eb",
   "icons": [
     {
-      "src": "https://www.flaticon.es/icono-gratis/radio_9171830?term=antena+radio&related_id=9171830",
+      "src": "https://cdn-icons-png.flaticon.com/512/9171/9171830.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "https://www.flaticon.es/icono-gratis/radio_9171830?term=antena+radio&related_id=9171830",
+      "src": "https://cdn-icons-png.flaticon.com/512/9171/9171830.png",
       "sizes": "512x512",
       "type": "image/png"
     }
